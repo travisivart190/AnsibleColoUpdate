@@ -1,0 +1,47 @@
+---
+  - name: CTF - Denver
+    hosts: [Den]
+    become: true
+    gather_facts: no
+    pre_tasks:
+      - name: Update
+        raw: apt-get -y update
+      - name: Dist-Upgrade
+        raw: apt-get -y dist-upgrade
+        register: task_result
+      - name: Reboot immediately if there was a change.
+        shell: "sleep 5 && reboot"
+        async: 1
+        poll: 0
+        when: task_result is changed
+      - name: Wait for the reboot to complete if there was a change.
+        wait_for_connection:
+          connect_timeout: 20
+          sleep: 5
+          delay: 5
+          timeout: 300
+        when: task_result is changed
+
+  - name: CTF - Colo
+    hosts: [Colo]
+    become: true
+    gather_facts: no
+    pre_tasks:
+      - name: Update
+        raw: apt-get -y update
+      - name: Dist-Upgrade
+        raw: apt-get -y dist-upgrade
+        register: task_result
+      - name: Reboot immediately if there was a change.
+        shell: "sleep 5 && reboot"
+        async: 1
+        poll: 0
+        when: task_result is changed
+      - name: Wait for the reboot to complete if there was a change.
+        wait_for_connection:
+          connect_timeout: 20
+          sleep: 5
+          delay: 5
+          timeout: 300
+        when: task_result is changed
+...
